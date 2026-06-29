@@ -264,7 +264,9 @@ h3 { font-size: 20px; }
 .outcome-art { width: 100%; border-radius: 10px; border: 2px solid var(--ink); }
 .outcome-text h3 { font-size: 22px; }
 .outcome-text p { margin: 6px 0 0; color: var(--ink); font-size: 15px; line-height: 1.5; }
-.microbe-wrap { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+.microbe-wrap { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
+.microbe-item { display: flex; align-items: center; gap: 14px; }
+.microbe-name { font-weight: 800; font-size: 18px; }
 
 /* ---------- Breakdown bars ---------- */
 .breakdown { margin-bottom: 20px; }

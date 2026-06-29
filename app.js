@@ -267,11 +267,16 @@
       blurb.textContent = GET_TESTED;
       microbeWrap.hidden = false;
       outcome.stis.forEach((s) => {
-        const d = document.createElement("div");
-        d.className = "microbe-img";
-        d.title = s.label;
-        d.style.backgroundImage = `url("${STI_IMG[s.key]}")`;
-        microbeWrap.appendChild(d);
+        const item = document.createElement("div");
+        item.className = "microbe-item";
+        const img = document.createElement("div");
+        img.className = "microbe-img";
+        img.style.backgroundImage = `url("${STI_IMG[s.key]}")`;
+        const name = document.createElement("span");
+        name.className = "microbe-name";
+        name.textContent = s.label;
+        item.append(img, name);
+        microbeWrap.appendChild(item);
       });
     }
   }
