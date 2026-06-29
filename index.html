@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Hook-Up Game — STI Risk Explorer</title>
+  <link rel="icon" href="img/logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="topbar">
+    <a class="topbar-btn" href="about.html">ⓘ About &amp; sources</a>
+    <button class="topbar-btn" id="globalRestart" hidden>↺ Restart</button>
+  </div>
+
+  <main class="app" id="app">
+
+    <!-- ===================== LANDING ===================== -->
+    <section class="screen screen--active" data-screen="landing">
+      <div class="card hero-card">
+        <img class="hero-logo" src="img/logo.png" alt="Hook-Up Game logo" />
+        <h1 class="title">The Hook-Up Game</h1>
+        <p class="subtitle">An honest look at the odds. Make some choices, see your real-world chance of an STI this year — then roll the dice.</p>
+        <img class="hero-art" src="img/hero.png" alt="Three young adults in a relaxed social setting" />
+        <button class="btn btn--primary" data-go="anatomy">Start the game →</button>
+        <p class="fineprint">Educational model for ages 18–35. Not medical advice.</p>
+      </div>
+    </section>
+
+    <!-- ===================== STEP 1: YOUR ANATOMY ===================== -->
+    <section class="screen" data-screen="anatomy">
+      <div class="card">
+        <div class="step-tag">Step 1 of 5</div>
+        <h2>What's your anatomy?</h2>
+        <p class="muted">This shapes how easily infections transmit to you. We keep it clinical.</p>
+        <div class="choice-grid choice-grid--2">
+          <button class="choice" data-field="studentAnatomy" data-value="penis">
+            <img src="img/anatomy-penis.png" alt="" />
+            <span>Penis</span>
+          </button>
+          <button class="choice" data-field="studentAnatomy" data-value="vulva">
+            <img src="img/anatomy-vulva.png" alt="" />
+            <span>Vulva</span>
+          </button>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn--ghost" data-go="landing">← Back</button>
+          <button class="btn btn--primary" data-next="partnerAnatomy" disabled>Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STEP 2: PARTNER ANATOMY ===================== -->
+    <section class="screen" data-screen="partnerAnatomy">
+      <div class="card">
+        <div class="step-tag">Step 2 of 5</div>
+        <h2>Your partners have…</h2>
+        <p class="muted">Pick “both” if you're bi or pan — we'll use the higher-risk pairing.</p>
+        <div class="choice-grid choice-grid--3">
+          <button class="choice choice--wide" data-field="partnerAnatomy" data-value="penis">
+            <img src="img/partner-anatomy-1.png" alt="" />
+            <span>Penises</span>
+          </button>
+          <button class="choice choice--wide" data-field="partnerAnatomy" data-value="vulva">
+            <img src="img/partner-anatomy-2.png" alt="" />
+            <span>Vulvas</span>
+          </button>
+          <button class="choice choice--wide" data-field="partnerAnatomy" data-value="both">
+            <img src="img/partner-anatomy-3.png" alt="" />
+            <span>Both</span>
+          </button>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn--ghost" data-go="anatomy">← Back</button>
+          <button class="btn btn--primary" data-next="partners" disabled>Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STEP 3: PARTNERS ===================== -->
+    <section class="screen" data-screen="partners">
+      <div class="card">
+        <div class="step-tag">Step 3 of 5</div>
+        <h2>Who are you hooking up with?</h2>
+        <p class="muted">Pick the type of partner you'll have this year — then choose how many.</p>
+        <img class="banner-art" src="img/partners-count.png" alt="" />
+
+        <div class="choice-grid choice-grid--2 tier-grid" id="tierSelect">
+          <button class="choice choice--tier" data-field="partnerTier" data-value="partner">
+            <img src="img/tier-partner.png" alt="" />
+            <span class="tier-name">Relationship partner</span>
+            <small>Lowest risk — boyfriend / girlfriend / spouse</small>
+          </button>
+          <button class="choice choice--tier" data-field="partnerTier" data-value="friend">
+            <img src="img/tier-friend.png" alt="" />
+            <span class="tier-name">Friend</span>
+            <small>Someone you know well</small>
+          </button>
+          <button class="choice choice--tier" data-field="partnerTier" data-value="acquaintance">
+            <img src="img/tier-acquaintance.png" alt="" />
+            <span class="tier-name">Acquaintance</span>
+            <small>You sort of know each other</small>
+          </button>
+          <button class="choice choice--tier" data-field="partnerTier" data-value="stranger">
+            <img src="img/tier-stranger.png" alt="" />
+            <span class="tier-name">Stranger</span>
+            <small>Highest risk — just met</small>
+          </button>
+        </div>
+
+        <div class="count-control" id="countControl" hidden>
+          <label id="countLabel">How many this year?</label>
+          <div class="stepper stepper--lg">
+            <button data-count-btn="-1" aria-label="Fewer">−</button>
+            <span class="count" id="partnerCount">1</span>
+            <button data-count-btn="1" aria-label="More">+</button>
+          </div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn btn--ghost" data-go="partnerAnatomy">← Back</button>
+          <button class="btn btn--primary" data-next="condoms" id="partnersNext" disabled>Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STEP 4: CONDOMS ===================== -->
+    <section class="screen" data-screen="condoms">
+      <div class="card">
+        <div class="step-tag">Step 4 of 5</div>
+        <h2>Do you use condoms?</h2>
+        <p class="muted">One setting for all partners. It matters a lot for some STIs — and barely at all for others.</p>
+        <div class="choice-grid choice-grid--2">
+          <button class="choice" data-field="condoms" data-value="true">
+            <div class="sprite sprite--condom" style="--n:2; --i:0;"></div>
+            <span>Yes, every time</span>
+          </button>
+          <button class="choice" data-field="condoms" data-value="false">
+            <div class="sprite sprite--condom" style="--n:2; --i:1;"></div>
+            <span>No</span>
+          </button>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn--ghost" data-go="partners">← Back</button>
+          <button class="btn btn--primary" data-next="hpv" disabled>Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STEP 5: HPV VACCINE ===================== -->
+    <section class="screen" data-screen="hpv">
+      <div class="card">
+        <div class="step-tag">Step 5 of 5</div>
+        <h2>Have you had the HPV vaccine?</h2>
+        <p class="muted">HPV is the most common STI by far. The vaccine prevents most high-risk strains — it's the biggest lever on your odds.</p>
+        <div class="choice-grid choice-grid--2">
+          <button class="choice" data-field="hpvVaccinated" data-value="true">
+            <div class="microbe-badge">
+              <div class="microbe-img microbe-img--hpv"></div>
+              <span class="badge badge--ok">✓</span>
+            </div>
+            <span>Yes, vaccinated</span>
+          </button>
+          <button class="choice" data-field="hpvVaccinated" data-value="false">
+            <div class="microbe-badge">
+              <div class="microbe-img microbe-img--hpv"></div>
+              <span class="badge badge--no">✕</span>
+            </div>
+            <span>No / not sure</span>
+          </button>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn--ghost" data-go="condoms">← Back</button>
+          <button class="btn btn--primary" id="calcBtn" disabled>See my odds →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RESULTS ("Your Year") ===================== -->
+    <section class="screen" data-screen="results">
+      <div class="card">
+        <div class="step-tag">Your year</div>
+        <h2 id="oddsHeadline">Your odds of an STI this year</h2>
+
+        <div class="odds-meter">
+          <div class="odds-fill" id="oddsFill"></div>
+          <span class="odds-num" id="oddsNum">0%</span>
+        </div>
+
+        <details class="breakdown" id="breakdown">
+          <summary>See the full breakdown</summary>
+          <div class="bars" id="bars"></div>
+        </details>
+
+        <div class="roll-zone">
+          <button class="btn btn--primary btn--dice" id="rollBtn">🎲 Roll the Dice</button>
+        </div>
+
+        <!-- Outcome (hidden until first roll) -->
+        <div class="outcome" id="outcome" hidden>
+          <div class="rolling-inline">
+            <img class="dice-art spin" src="img/dice.png" alt="" />
+            <span>Rolling the dice…</span>
+          </div>
+          <div class="result-content">
+            <img class="outcome-art" id="outcomeArt" src="img/result-clear.png" alt="" />
+            <div class="outcome-text">
+              <h3 id="outcomeTitle"></h3>
+              <div class="microbe-wrap" id="microbeWrap" hidden></div>
+              <p id="outcomeBlurb"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Respec menu (appears only after the first roll) -->
+        <div id="respecSection" hidden>
+        <div class="respec">
+          <h3 class="respec-title">Tweak your choices, then roll the dice again</h3>
+
+          <div class="respec-row">
+            <span class="respec-label">Partner type</span>
+            <div class="pills">
+              <button class="pill" data-respec="partnerTier" data-value="partner">Relationship</button>
+              <button class="pill" data-respec="partnerTier" data-value="friend">Friend</button>
+              <button class="pill" data-respec="partnerTier" data-value="acquaintance">Acquaintance</button>
+              <button class="pill" data-respec="partnerTier" data-value="stranger">Stranger</button>
+            </div>
+          </div>
+
+          <div class="respec-row">
+            <span class="respec-label">Number of partners</span>
+            <div class="stepper">
+              <button data-respec-count="-1" aria-label="Fewer">−</button>
+              <span class="count" id="respecCount">1</span>
+              <button data-respec-count="1" aria-label="More">+</button>
+            </div>
+          </div>
+
+          <div class="respec-row">
+            <span class="respec-label">Condoms</span>
+            <div class="pills">
+              <button class="pill" data-respec="condoms" data-value="true">Yes</button>
+              <button class="pill" data-respec="condoms" data-value="false">No</button>
+            </div>
+          </div>
+
+          <div class="respec-row">
+            <span class="respec-label">HPV vaccine</span>
+            <div class="pills">
+              <button class="pill" data-respec="hpvVaccinated" data-value="true">Yes</button>
+              <button class="pill" data-respec="hpvVaccinated" data-value="false">No</button>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- /#respecSection -->
+
+        <p class="fineprint" id="disclaimer">
+          This is an <strong>educational model</strong> using simplified, population-level estimates calibrated to CDC/NHANES data.
+          It cannot predict any real individual's risk and is not medical advice. Real risk depends on testing, treatment,
+          local prevalence, vaccination (e.g. HPV), and many factors not modeled here.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="riskModel.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

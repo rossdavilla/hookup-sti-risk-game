@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About & Sources — The Hook-Up Game</title>
+  <link rel="icon" href="img/logo.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="about.css" />
+</head>
+<body>
+  <main class="about">
+    <article class="about-card">
+
+      <a class="topbar-btn back" href="index.html">← Back to the game</a>
+
+      <h1>About The Hook-Up Game</h1>
+      <p class="lead">An open, transparent look at how this educational tool estimates STI risk — so educators can check the math and the sources before using it with students.</p>
+
+      <h2>What this is</h2>
+      <p>The Hook-Up Game lets a student describe a year of sexual choices — their anatomy and their partners' anatomy, what kind of partners (relationship, friend, acquaintance, stranger), how many, whether they use condoms, and whether they've had the HPV vaccine — and then estimates the chance they'd contract one or more STIs that year. It "rolls the dice" to show a possible outcome and lets students tweak one variable at a time to see how risk moves.</p>
+      <p>It is a <strong>teaching model built from published, population-level statistics</strong>, not a diagnostic tool. It cannot predict any real person's risk. The goal is to make the relationships between behavior and risk <em>visible and explorable</em> — especially the outsized roles of partner count, condoms (for fluid-borne STIs), and the HPV vaccine.</p>
+
+      <h2>How the math works</h2>
+      <p>The model is built <strong>per STI</strong> rather than as one aggregate number. For each STI and each partner, the chance that partner transmits it to the student is:</p>
+      <div class="eq">risk_per_partner = [ prevalence &times; tier_multiplier ] &times; transmission(anatomy_pairing) &times; condom_factor &times; vaccine_factor</div>
+      <ul>
+        <li><strong>prevalence</strong> — the chance a random partner is currently carrying that STI (based on young-adult prevalence; see Table 1).</li>
+        <li><strong>tier_multiplier</strong> — how likely that <em>kind</em> of partner is to be carrying something, relative to an anonymous stranger (Table 3).</li>
+        <li><strong>transmission</strong> — the per-partnership chance the infection crosses <em>to the student</em>, which depends on the anatomy pairing (Table 2).</li>
+        <li><strong>condom_factor</strong> — the reduction from consistent condom use (Table 1).</li>
+        <li><strong>vaccine_factor</strong> — the reduction from the HPV vaccine (HPV only).</li>
+      </ul>
+      <p>Across a year with <em>N</em> partners, and then across all STIs, assuming independent partners:</p>
+      <div class="eq">P(get STI s) = 1 &minus; &prod;<sub>partners</sub> ( 1 &minus; risk_per_partner )</div>
+      <div class="eq">P(any STI)  = 1 &minus; &prod;<sub>STIs</sub> ( 1 &minus; P(get STI s) )</div>
+
+      <h2>The numbers</h2>
+
+      <h3>Table 1 — Prevalence &amp; condom protection (per STI)</h3>
+      <p>"Stranger-pool prevalence" is the chance a random unscreened young adult carries it. The condom factor is the transmission multiplier when condoms are used: fluid-borne STIs are cut ~98%, but skin-contact HPV and herpes only ~40%, because they spread from areas a condom doesn't cover.</p>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>STI</th><th>Stranger-pool prevalence</th><th>Condom factor</th><th>Condom reduction</th></tr></thead>
+          <tbody>
+            <tr><td>HPV</td><td>0.40</td><td>0.60</td><td>~40% (skin contact)</td></tr>
+            <tr><td>Herpes (HSV-2)</td><td>0.10</td><td>0.60</td><td>~40% (skin contact)</td></tr>
+            <tr><td>Chlamydia</td><td>0.04</td><td>0.02</td><td>~98%</td></tr>
+            <tr><td>Trichomoniasis</td><td>0.02</td><td>0.02</td><td>~98%</td></tr>
+            <tr><td>Gonorrhea</td><td>0.007</td><td>0.02</td><td>~98%</td></tr>
+            <tr><td>HIV</td><td>0.003</td><td>0.02</td><td>~98%</td></tr>
+            <tr><td>Syphilis</td><td>0.002</td><td>0.02</td><td>~98%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">Syphilis is technically skin-contact too, but is grouped with the 98% set here since its prevalence is negligible in this population.</p>
+
+      <h3>Table 2 — Transmission per partnership, by anatomy pairing</h3>
+      <p>The probability the infection crosses <em>to the student</em> in a typical partnership (condomless, partner infected). Receptive roles acquire infections more easily than insertive ones. Bi/pan students are evaluated using whichever pairing carries the higher risk.</p>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>STI</th><th>Vulva + penis (receptive)</th><th>Penis + vulva (insertive)</th><th>Penis + penis (anal, blended)</th><th>Vulva + vulva</th></tr></thead>
+          <tbody>
+            <tr><td>HPV</td><td>0.55</td><td>0.45</td><td>0.50</td><td>0.30</td></tr>
+            <tr><td>Herpes</td><td>0.15</td><td>0.08</td><td>0.12</td><td>0.08</td></tr>
+            <tr><td>Chlamydia</td><td>0.35</td><td>0.10</td><td>0.30</td><td>0.02</td></tr>
+            <tr><td>Trichomoniasis</td><td>0.40</td><td>0.10</td><td>0.05</td><td>0.10</td></tr>
+            <tr><td>Gonorrhea</td><td>0.50</td><td>0.20</td><td>0.45</td><td>0.02</td></tr>
+            <tr><td>HIV</td><td>0.02</td><td>0.007</td><td>0.08</td><td>0.0005</td></tr>
+            <tr><td>Syphilis</td><td>0.30</td><td>0.30</td><td>0.40</td><td>0.10</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="caption">Chlamydia values are anchored to published per-partnership transmission estimates (≈0.35 male→female, ≈0.10 female→male); the other STIs are scaled from these by their relative per-act transmissibility. The penis+penis figure is a 50/50 blend of insertive and receptive anal roles.</p>
+
+      <h3>Table 3 — Partner-tier prevalence multipliers</h3>
+      <p>A committed partner is far less likely to be carrying an STI than an anonymous one, because they are a "lower-prevalence pool" (more likely to be tested, monogamous, or known). The student picks one partner type and a number of partners (1–10).</p>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th>Partner type</th><th>Prevalence multiplier</th></tr></thead>
+          <tbody>
+            <tr><td>Stranger</td><td>1.00</td></tr>
+            <tr><td>Acquaintance</td><td>0.60</td></tr>
+            <tr><td>Friend</td><td>0.30</td></tr>
+            <tr><td>Relationship partner</td><td>0.12</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>The HPV vaccine</h2>
+      <p>When a student reports having the HPV vaccine, HPV transmission is multiplied by <strong>0.10 — a 90% reduction</strong>. This figure focuses on the high-risk, cancer-causing HPV types the vaccine targets (HPV 16, 18 and others), which are the strains that matter most for long-term health. Because risk compounds across multiple partners, the resulting drop in <em>yearly</em> HPV probability is large but slightly below a flat 90%.</p>
+
+      <h2>Rolling the outcome</h2>
+      <p>When a student rolls the dice, <strong>each STI is rolled independently</strong> against its own probability. A student can therefore come away with zero, one, or several STIs in a year — and the result screen shows every STI that lands, titling the box "You contracted multiple STIs" when more than one does. This is more realistic than forcing a single result and lets rarer STIs surface on their own merits rather than always being eclipsed by the most common one.</p>
+
+      <h2>Worked example</h2>
+      <div class="note-box">
+        <p>A straight woman (vulva; partners have penises), <strong>3 strangers, no condoms, unvaccinated</strong> → about a <strong>58%</strong> chance of an STI that year, dominated by HPV. Turning condoms on drops it to ~<strong>36%</strong> — chlamydia, gonorrhea, trichomoniasis and HIV nearly vanish, but HPV stays high because condoms barely affect it. The <strong>HPV vaccine</strong> is the bigger lever here: it drops the unprotected case to ~<strong>17%</strong>, and condoms plus the vaccine together reach ~<strong>7%</strong>. The contrast — condoms for fluid-borne STIs, the vaccine for HPV — is the central teaching point.</p>
+      </div>
+
+      <h2>Assumptions &amp; caveats</h2>
+      <ul>
+        <li>All figures are <strong>educational estimates</strong> calibrated to U.S. public-health data; they cannot predict any individual's real risk.</li>
+        <li>Prevalence figures are general young-adult prevalence. Real "hook-up pool" prevalence varies by community — and syphilis and HIV concentrate heavily in specific networks (e.g. among men who have sex with men), so the general-population figures understate risk in those contexts.</li>
+        <li>Per-partnership transmission values bake in an "average" amount of sex per partner, so the tool does not ask about frequency. Oral sex is not modeled separately.</li>
+        <li>Condom protection is modeled in two tiers (≈98% for fluid-borne STIs, ≈40% for skin-contact HPV/herpes) and the HPV-vaccine effect as a flat 90% reduction. Both are deliberate simplifications of figures that vary by study, consistency of use, and vaccine type and timing.</li>
+        <li>Partners are treated as independent draws; the student is assumed to start the year uninfected; and no mid-year testing or treatment is modeled.</li>
+      </ul>
+
+      <h2>Using this in your classroom</h2>
+      <p>This tool is free to use and adapt for non-commercial educational purposes. All of the parameters above live in a single, readable file (<code>riskModel.js</code>) so you can review or adjust any number for your own curriculum. We encourage pairing it with a conversation about the limits of population models and the importance of testing, communication, and consent.</p>
+
+      <h2>Sources</h2>
+      <p>Every parameter above is grounded in the following public-health literature. We encourage educators to read the primary sources directly.</p>
+
+      <p class="src-group">Prevalence &amp; overall burden</p>
+      <ul class="sources">
+        <li><span class="src-title">Kreisel KM, et al. "Sexually Transmitted Infections Among US Women and Men: Prevalence and Incidence Estimates, 2018." <em>Sexually Transmitted Diseases</em>, 2021.</span> — the ~68 million prevalent / ~26 million new infections figures, and the dominance of HPV, herpes, chlamydia and trichomoniasis. <a href="https://pubmed.ncbi.nlm.nih.gov/33492089/" target="_blank" rel="noopener">pubmed.ncbi.nlm.nih.gov/33492089</a></li>
+        <li><span class="src-title">CDC Newsroom — "CDC estimates 1 in 5 people in the U.S. have a sexually transmitted infection."</span> <a href="https://archive.cdc.gov/www_cdc_gov/media/releases/2021/p0125-sexualy-transmitted-infection.html" target="_blank" rel="noopener">archive.cdc.gov/.../p0125-sexualy-transmitted-infection.html</a></li>
+        <li><span class="src-title">CDC — Sexually Transmitted Infections among young Americans</span> (ages 15–24 account for about half of new infections). <a href="https://npin.cdc.gov/publication/sexually-transmitted-infections-among-young-americans" target="_blank" rel="noopener">npin.cdc.gov/publication/sexually-transmitted-infections-among-young-americans</a></li>
+        <li><span class="src-title">CDC — Sexually Transmitted Infections Surveillance (annual national overview).</span> <a href="https://www.cdc.gov/sti-statistics/annual/index.html" target="_blank" rel="noopener">cdc.gov/sti-statistics/annual</a></li>
+        <li><span class="src-title">CDC/NCHS — "Prevalence of HPV in Adults Aged 18–69: United States" (Data Brief No. 280).</span> <a href="https://www.cdc.gov/nchs/products/databriefs/db280.htm" target="_blank" rel="noopener">cdc.gov/nchs/products/databriefs/db280.htm</a></li>
+        <li><span class="src-title">Lewis RM, et al. "Estimated Prevalence and Incidence of Disease-Associated HPV Types Among 15- to 59-Year-Olds in the United States." <em>Sexually Transmitted Diseases</em>, 2021.</span> <a href="https://pubmed.ncbi.nlm.nih.gov/33492097/" target="_blank" rel="noopener">pubmed.ncbi.nlm.nih.gov/33492097</a></li>
+        <li><span class="src-title">CDC QuickStats — Prevalence of HSV-1 and HSV-2 among adolescents and adults, United States, 1999–2016.</span> <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5815486/" target="_blank" rel="noopener">ncbi.nlm.nih.gov/pmc/articles/PMC5815486</a></li>
+      </ul>
+
+      <p class="src-group">Transmission probabilities</p>
+      <ul class="sources">
+        <li><span class="src-title">Price MJ, et al. — Per-partnership transmission probabilities for <em>Chlamydia trachomatis</em>: evidence synthesis of population-based survey data.</span> — the anchor for the chlamydia transmission figures (≈0.35 M→F, ≈0.10 F→M). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8128448/" target="_blank" rel="noopener">pmc.ncbi.nlm.nih.gov/articles/PMC8128448</a></li>
+        <li><span class="src-title">Patel P, et al. / CDC — "Estimating per-act HIV transmission risk: a systematic review."</span> — per-act vaginal and anal transmission estimates. <a href="https://stacks.cdc.gov/view/cdc/59838/cdc_59838_DS1.pdf" target="_blank" rel="noopener">stacks.cdc.gov/view/cdc/59838</a></li>
+        <li><span class="src-title">aidsmap — "Anal sex and the risk of HIV transmission."</span> — receptive vs. insertive per-act risk, informing the anal-blend figure. <a href="https://www.aidsmap.com/about-hiv/anal-sex-and-risk-hiv-transmission" target="_blank" rel="noopener">aidsmap.com/about-hiv/anal-sex-and-risk-hiv-transmission</a></li>
+      </ul>
+
+      <p class="src-group">Condom effectiveness</p>
+      <ul class="sources">
+        <li><span class="src-title">CDC — Sexually Transmitted Infections Treatment Guidelines, 2021 (condom effectiveness by infection).</span> — basis for the ~98% (fluid-borne) vs. weaker (skin-contact) two-tier model. <a href="https://www.cdc.gov/mmwr/volumes/70/rr/rr7004a1.htm" target="_blank" rel="noopener">cdc.gov/mmwr/volumes/70/rr/rr7004a1.htm</a></li>
+      </ul>
+
+      <p class="src-group">HPV vaccine effectiveness</p>
+      <ul class="sources">
+        <li><span class="src-title">CDC — HPV Vaccine Safety and Effectiveness Data.</span> — the vaccine prevents the HPV types that cause ~90% of HPV-attributable cancers. <a href="https://www.cdc.gov/hpv/hcp/vaccination-considerations/safety-and-effectiveness-data.html" target="_blank" rel="noopener">cdc.gov/hpv/hcp/vaccination-considerations/safety-and-effectiveness-data.html</a></li>
+        <li><span class="src-title">National Cancer Institute — HPV Vaccine Fact Sheet.</span> <a href="https://www.cancer.gov/about-cancer/causes-prevention/risk/infectious-agents/hpv-vaccine-fact-sheet" target="_blank" rel="noopener">cancer.gov/.../hpv-vaccine-fact-sheet</a></li>
+        <li><span class="src-title">Human Papillomavirus Vaccine Efficacy and Effectiveness against Cancer (review).</span> <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8706722/" target="_blank" rel="noopener">pmc.ncbi.nlm.nih.gov/articles/PMC8706722</a></li>
+      </ul>
+
+      <p class="about-disclaimer">
+        <strong>Disclaimer.</strong> The Hook-Up Game is an educational model using simplified, population-level estimates. It cannot predict any real individual's risk and is not medical advice. Real risk depends on testing, treatment, local prevalence, vaccination, partner history, and many factors not captured here. For personal guidance, consult a healthcare provider. Parameter values reflect the sources above as interpreted for a classroom tool and may differ from any single study.
+      </p>
+
+      <a class="topbar-btn back" href="index.html" style="margin-top:24px;">← Back to the game</a>
+
+    </article>
+  </main>
+</body>
+</html>

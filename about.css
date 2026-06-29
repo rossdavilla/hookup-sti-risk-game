@@ -1,0 +1,68 @@
+/* ============================================================
+   About / methodology page — shares the palette & body from styles.css
+   ============================================================ */
+
+.about { max-width: 880px; margin: 0 auto; padding: 30px 18px 90px; }
+
+.about-card {
+  background: var(--cream); border: var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 34px 40px 40px;
+}
+
+.back { margin-bottom: 20px; }
+
+.about h1 { font-size: 38px; margin: 6px 0 8px; line-height: 1.1; }
+.about .lead { font-size: 18px; color: var(--grey); margin: 0 0 8px; line-height: 1.5; }
+
+.about h2 {
+  font-size: 25px; color: var(--blue);
+  border-bottom: 3px solid var(--blue); padding-bottom: 6px;
+  margin: 38px 0 14px;
+}
+.about h3 { font-size: 18px; color: var(--coral); margin: 22px 0 8px; }
+.about p, .about li { font-size: 16px; line-height: 1.65; }
+.about ul { padding-left: 22px; }
+.about li { margin-bottom: 8px; }
+.about strong { font-weight: 800; }
+
+/* Equations */
+.eq {
+  font-family: "Courier New", Courier, monospace; font-size: 15px;
+  background: var(--peach); border: 2px solid var(--ink); border-radius: 10px;
+  padding: 12px 14px; margin: 10px 0; overflow-x: auto;
+}
+
+/* Data tables */
+.table-scroll { overflow-x: auto; margin: 14px 0 6px; }
+table.data { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 460px; }
+table.data th, table.data td { border: 2px solid var(--ink); padding: 8px 11px; text-align: left; }
+table.data th { background: var(--blue); color: var(--cream); font-weight: 800; }
+table.data tr:nth-child(even) td { background: #f1f1f1; }
+table.data td:first-child, table.data th:first-child { font-weight: 700; }
+.caption { font-size: 13.5px; color: var(--grey); margin: 4px 0 0; }
+
+/* Callout box */
+.note-box {
+  background: var(--sage); border: var(--line); border-radius: var(--radius-sm);
+  padding: 16px 18px; margin: 18px 0;
+}
+.note-box p { margin: 0; }
+
+/* Sources */
+.sources { list-style: none; padding: 0; margin: 8px 0 0; }
+.sources li { padding: 11px 0; border-top: 2px dashed rgba(26,26,26,.18); }
+.sources li:first-child { border-top: none; }
+.sources .src-title { font-weight: 700; }
+.sources a { color: var(--blue); word-break: break-word; }
+.src-group { font-weight: 800; color: var(--ink); margin: 22px 0 2px; font-size: 16px; }
+
+.about-disclaimer {
+  font-size: 13px; color: var(--grey); margin-top: 34px;
+  border-top: 2px solid var(--ink); padding-top: 16px; line-height: 1.6;
+}
+
+@media (max-width: 560px) {
+  .about-card { padding: 24px 20px; }
+  .about h1 { font-size: 30px; }
+  .about h2 { font-size: 22px; }
+}

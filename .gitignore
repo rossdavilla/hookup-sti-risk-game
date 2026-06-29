@@ -1,0 +1,17 @@
+# OS / editor cruft
+.DS_Store
+*.log
+
+# Office lock/temp files
+~$*
+
+# Node
+node_modules/
+.npmcache/
+
+# Local Claude Code settings (machine-specific)
+.claude/settings.local.json
+
+# Third-party style-reference images — collected for art direction only,
+# not part of the app and not ours to redistribute.
+img/Style Examples/
