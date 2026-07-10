@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=720, initial-scale=1.0" />
+  <title>The Hook-Up Game — 720×450</title>
+  <link rel="icon" href="img/logo.png" />
+  <style>
+  /* ============================================================
+     The Hook-Up Game — compact build for a 720×450 iframe.
+     Same risk model + palette as the full site, re-laid-out to fit
+     an exact fixed stage with no external scrolling.
+     ============================================================ */
+  :root {
+    --peach:#F4D9BD; --blue:#3E92A8; --coral:#E6552E; --lav:#C8B7E8;
+    --sage:#D7E0C4; --cream:#FBF6EE; --ink:#1A1A1A; --grey:#6f6a63;
+    --radius:16px; --radius-sm:11px; --line:2.5px solid var(--ink);
+  }
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  html,body {
+    margin:0; padding:0;
+    font-family:"Arial","Helvetica Neue",Helvetica,sans-serif;
+    color:var(--ink);
+    background:var(--grey);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- The fixed 720×450 stage ---------- */
+  .stage {
+    position:relative;
+    width:720px; height:450px;
+    margin:0 auto;
+    overflow:hidden;
+    background-color:var(--peach);
+    background-image:url("img/bg-pattern.png");
+    background-size:300px; background-repeat:repeat;
+  }
+
+  /* ---------- Top bar (About + Restart) ---------- */
+  .topbar { position:absolute; top:8px; right:8px; z-index:50; display:flex; gap:6px; }
+  .topbar-btn {
+    font:inherit; font-weight:700; font-size:11px;
+    background:var(--cream); color:var(--ink); text-decoration:none;
+    border:2px solid var(--ink); border-radius:999px;
+    padding:4px 10px; cursor:pointer; box-shadow:0 2px 0 var(--ink);
+    display:inline-flex; align-items:center; white-space:nowrap;
+  }
+  .topbar-btn:active { transform:translateY(2px); box-shadow:none; }
+
+  /* ---------- Screens ---------- */
+  .screen {
+    display:none; position:absolute; inset:0;
+    padding:14px 18px; overflow-y:auto;
+    animation:rise .3s ease;
+  }
+  .screen--active { display:block; }
+  @keyframes rise { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:none;} }
+
+  .card {
+    background:var(--cream); border:var(--line); border-radius:var(--radius);
+    box-shadow:0 4px 0 rgba(26,26,26,.10);
+    padding:16px 18px; min-height:100%;
+    display:flex; flex-direction:column;
+  }
+
+  .step-tag {
+    align-self:flex-start;
+    font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--cream); background:var(--blue); border:2px solid var(--ink);
+    border-radius:999px; padding:3px 10px; margin-bottom:8px;
+  }
+  h1,h2,h3 { margin:0 0 4px; line-height:1.1; }
+  h2 { font-size:20px; }
+  h3 { font-size:16px; }
+  .muted { color:var(--grey); margin:0 0 12px; font-size:12.5px; line-height:1.35; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    font:inherit; font-weight:700; font-size:14px;
+    border:var(--line); border-radius:999px;
+    padding:9px 18px; cursor:pointer;
+    transition:transform .08s ease, box-shadow .08s ease, background .15s;
+    box-shadow:0 3px 0 var(--ink);
+  }
+  .btn:active { transform:translateY(3px); box-shadow:0 0 0 var(--ink); }
+  .btn--primary { background:var(--coral); color:var(--cream); }
+  .btn--ghost { background:var(--cream); color:var(--ink); box-shadow:0 3px 0 rgba(26,26,26,.25); }
+  .btn:disabled { opacity:.4; cursor:not-allowed; box-shadow:0 3px 0 rgba(26,26,26,.2); }
+  .btn:disabled:active { transform:none; }
+
+  .nav-row { display:flex; justify-content:space-between; gap:10px; margin-top:auto; padding-top:12px; }
+
+  /* ---------- Landing (two columns to use the wide format) ---------- */
+  .hero-card { flex-direction:row; align-items:center; gap:18px; }
+  .hero-left { flex:1; display:flex; flex-direction:column; }
+  .hero-logo { width:56px; height:56px; object-fit:contain; margin-bottom:2px; }
+  .title { font-size:30px; letter-spacing:-.01em; }
+  .subtitle { color:var(--grey); font-size:13px; margin:4px 0 14px; line-height:1.4; }
+  .hero-art { width:264px; height:auto; max-height:280px; object-fit:contain;
+    border-radius:var(--radius-sm); border:var(--line); display:block; }
+  .fineprint { font-size:10.5px; color:var(--grey); margin-top:10px; line-height:1.45; }
+
+  /* ---------- Choice grids ---------- */
+  .choice-grid { display:grid; gap:12px; }
+  .choice-grid--2 { grid-template-columns:1fr 1fr; }
+  .choice-grid--3 { grid-template-columns:1fr 1fr 1fr; }
+  .choice {
+    font:inherit; cursor:pointer; background:var(--peach);
+    border:var(--line); border-radius:var(--radius-sm);
+    padding:12px 8px; display:flex; flex-direction:column; align-items:center; gap:8px;
+    transition:transform .1s, background .15s, box-shadow .1s;
+    box-shadow:0 3px 0 rgba(26,26,26,.18);
+  }
+  .choice img, .choice .sprite { width:74px; height:74px; object-fit:contain; border-radius:8px; }
+  .choice span { font-weight:700; font-size:13.5px; }
+  .choice:hover { transform:translateY(-2px); }
+  .choice.selected { background:var(--sage); box-shadow:0 3px 0 var(--ink); outline:3px solid var(--ink); }
+  .choice--wide img { width:100%; height:auto; max-height:64px; }
+
+  /* Vaccine choice */
+  .microbe-badge { position:relative; width:74px; height:74px; }
+  .badge {
+    position:absolute; bottom:-4px; right:-4px; width:24px; height:24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:var(--cream); border:2px solid var(--ink);
+  }
+  .badge--ok { background:#4f9a4f; }
+  .badge--no { background:var(--coral); }
+
+  /* ---------- Tiers (single row of 4) ---------- */
+  .tier-grid { grid-template-columns:repeat(4,1fr); gap:10px; }
+  .choice--tier { padding:10px 6px; gap:5px; }
+  .choice--tier img { width:60px; height:60px; object-fit:contain; border-radius:10px; }
+  .choice--tier .tier-name { font-size:13px; font-weight:800; text-align:center; line-height:1.1; }
+  .choice--tier small { color:var(--grey); font-size:10px; font-weight:400; line-height:1.25; text-align:center; }
+
+  .count-control {
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    margin-top:12px; padding:10px 14px; border:var(--line); border-radius:var(--radius-sm);
+    background:var(--sage); animation:rise .3s ease;
+  }
+  .count-control label { font-weight:800; font-size:14px; }
+  .stepper { display:flex; align-items:center; gap:8px; }
+  .stepper button {
+    width:38px; height:38px; font-size:22px; font-weight:700; line-height:1;
+    border:var(--line); border-radius:10px; background:var(--cream); cursor:pointer; box-shadow:0 2px 0 var(--ink);
+  }
+  .stepper button:active { transform:translateY(2px); box-shadow:none; }
+  .stepper button:disabled { opacity:.3; cursor:not-allowed; box-shadow:0 2px 0 rgba(26,26,26,.3); }
+  .stepper .count { min-width:40px; text-align:center; font-size:26px; font-weight:800; }
+
+  /* ---------- Sprites ---------- */
+  .sprite {
+    background-repeat:no-repeat;
+    background-size:calc(var(--n) * 100%) 100%;
+    background-position:calc(var(--i) / (var(--n) - 1) * 100%) 50%;
+  }
+  .sprite--condom { background-image:url("img/condom-toggle.png"); }
+  .microbe-img {
+    width:64px; height:64px; border:2px solid var(--ink); border-radius:10px;
+    background-size:contain; background-position:center; background-repeat:no-repeat;
+  }
+  .microbe-img--hpv { background-image:url("img/sti-HPV.png"); }
+
+  /* ---------- Results ---------- */
+  [data-screen="results"] { padding:10px 14px; }
+  [data-screen="results"] .card { padding:11px 16px; }
+  [data-screen="results"] h2 { font-size:17px; margin-bottom:2px; }
+  .odds-meter {
+    position:relative; height:30px; border:var(--line); border-radius:999px;
+    background:var(--cream); overflow:hidden; margin:4px 0 8px;
+  }
+  .odds-fill {
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--sage),var(--blue) 55%,var(--coral));
+    border-right:3px solid var(--ink);
+    transition:width 1s cubic-bezier(.2,.8,.2,1);
+  }
+  .odds-num {
+    position:absolute; top:50%; right:10px; transform:translateY(-50%);
+    font-weight:800; font-size:15px; color:var(--ink);
+    background:var(--cream); border:2px solid var(--ink); border-radius:999px; padding:1px 9px;
+  }
+  .roll-zone { text-align:center; margin:2px 0 6px; }
+  .btn--dice { font-size:15px; padding:9px 26px; }
+
+  /* Post-roll: two-column layout to use the wide format */
+  .post-roll { display:grid; grid-template-columns:258px 1fr; gap:12px; align-items:start; }
+  .post-roll.rolling { grid-template-columns:1fr; }
+  .pr-left { display:flex; flex-direction:column; gap:6px; }
+  .roll-again { text-align:center; }
+  .roll-again .btn { font-size:14px; padding:8px 22px; }
+  .post-roll.rolling .roll-again { display:none; }
+
+  .breakdown { margin-bottom:6px; }
+  .breakdown summary { cursor:pointer; font-weight:700; font-size:12.5px; padding:3px 0; }
+  .bars { display:flex; flex-direction:column; gap:5px; margin-top:8px; }
+  .bar-row { display:grid; grid-template-columns:104px 1fr 46px; align-items:center; gap:8px; font-size:11.5px; }
+  .bar-track { height:13px; background:var(--cream); border:2px solid var(--ink); border-radius:999px; overflow:hidden; }
+  .bar-val { display:block; height:100%; background:var(--blue); border-radius:999px; }
+  .bar-pct { font-weight:700; text-align:right; }
+
+  .outcome {
+    background:var(--peach); border:var(--line); border-radius:var(--radius-sm);
+    padding:8px; margin-bottom:0;
+  }
+  .outcome.clear { background:var(--sage); }
+  .outcome.hit { background:#f6e2d6; }
+  .result-content { display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; }
+  .rolling-inline { display:none; flex-direction:column; align-items:center; gap:6px; font-weight:800; font-size:14px; padding:6px; }
+  .dice-art { width:84px; height:84px; object-fit:contain; }
+  .spin { animation:tumble .7s ease-in-out infinite; }
+  @keyframes tumble {
+    0%{transform:rotate(0) translateY(0);} 50%{transform:rotate(180deg) translateY(-8px);} 100%{transform:rotate(360deg) translateY(0);}
+  }
+  .outcome.rolling { text-align:center; }
+  .outcome.rolling .result-content { display:none; }
+  .outcome.rolling .rolling-inline { display:flex; }
+  .outcome-art { max-height:76px; width:auto; border-radius:9px; border:2px solid var(--ink); }
+  .outcome-text h3 { font-size:15px; }
+  .outcome-text p { margin:3px 0 0; color:var(--ink); font-size:11.5px; line-height:1.35; }
+  .microbe-wrap { display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin:5px 0; }
+  .microbe-item {
+    display:flex; align-items:center; gap:6px;
+    background:var(--cream); border:2px solid var(--ink); border-radius:999px; padding:3px 9px 3px 4px;
+  }
+  .microbe-item .microbe-img { width:26px; height:26px; border-width:1.5px; border-radius:8px; }
+  .microbe-name { font-weight:800; font-size:11.5px; }
+
+  /* Respec */
+  .respec { border:var(--line); border-radius:var(--radius-sm); background:var(--cream); padding:8px 12px 10px; margin-bottom:0; }
+  .respec-title { font-size:14px; margin-bottom:2px; }
+  .respec-row {
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:7px 0; border-top:2px dashed rgba(26,26,26,.15); flex-wrap:wrap;
+  }
+  .respec-row:first-of-type { border-top:none; }
+  .respec-label { font-weight:700; font-size:12.5px; }
+  .respec .stepper button { width:30px; height:30px; font-size:18px; }
+  .respec .stepper .count { min-width:30px; font-size:20px; }
+  .pills { display:flex; gap:6px; flex-wrap:wrap; }
+  .pill {
+    font:inherit; font-weight:700; font-size:11.5px;
+    padding:5px 11px; border:2px solid var(--ink); border-radius:999px;
+    background:var(--cream); color:var(--ink); cursor:pointer; transition:background .12s, color .12s;
+  }
+  .pill:hover { background:var(--peach); }
+  .pill.active { background:var(--blue); color:var(--cream); }
+
+  .disclaimer { font-size:9px; color:var(--grey); margin-top:6px; line-height:1.35; }
+
+  /* Thin scrollbar so it stays inside the 720×450 frame gracefully */
+  .screen::-webkit-scrollbar { width:8px; }
+  .screen::-webkit-scrollbar-thumb { background:rgba(26,26,26,.25); border-radius:999px; }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="topbar">
+      <a class="topbar-btn" href="about.html" target="_blank" rel="noopener">ⓘ About</a>
+      <button class="topbar-btn" id="globalRestart" hidden>↺ Restart</button>
+    </div>
+
+    <!-- ===================== LANDING ===================== -->
+    <section class="screen screen--active" data-screen="landing">
+      <div class="card hero-card">
+        <div class="hero-left">
+          <img class="hero-logo" src="img/logo.png" alt="Hook-Up Game logo" />
+          <h1 class="title">The Hook-Up Game</h1>
+          <p class="subtitle">An honest look at the odds. Make some choices, see your real-world chance of an STI this year — then roll the dice.</p>
+          <button class="btn btn--primary" data-go="anatomy" style="align-self:flex-start">Start the game →</button>
+          <p class="fineprint">Educational model for ages 18–35. Not medical advice.</p>
+        </div>
+        <img class="hero-art" src="img/hero.png" alt="Three young adults in a relaxed social setting" />
+      </div>
+    </section>
+
+    <!-- ===================== STEP 1: YOUR ANATOMY ===================== -->
+    <section class="screen" data-screen="anatomy">
+      <div class="card">
+        <div class="step-tag">Step 1 of 5</div>
+        <h2>What's your anatomy?</h2>
+        <p class="muted">This shapes how easily infections transmit to you. We keep it clinical.</p>
+        <div class="choice-grid choice-grid--2">
+          <button class="choice" data-field="studentAnatomy" data-value="penis">
+            <img src="img/anatomy-penis.png" alt="" /><span>Penis</span>
+          </button>
+          <button class="choice" data-field="studentAnatomy" data-value="vulva">
+            <img src="img/anatomy-vulva.png" alt="" /><span>Vulva</span>
+          </button>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn--ghost" data-go="landing">← Back</button>
+          <button class="btn btn--primary" data-next="partnerAnatomy" disabled>Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STEP 2: PARTNER ANATOMY ===================== -->
+    <section class="screen" data-screen="partnerAnatomy">
+      <div class="card">
+        <div class="step-tag">Step 2 of 5</div>
+        <h2>Your partners have…</h2>
+        <p class="muted">Pick "both" if you're bi or pan — we'll use the higher-risk pairing.</p>
+        <div class="choice-grid choice-grid--3">
+          <button class="choice choice--wide" data-field="partnerAnatomy" data-value="penis">
+            <img src="img/partner-anatomy-1.png" alt="" /><span>Penises</span>
+          </button>
+          <button class="choice choice--wide" data-field="partnerAnatomy" data-value="vulva">
+            <img src="img/partner-anatomy-2.png" alt="" /><span>Vulvas</span>
+          </button>
+          <button class="choice choice--wide" data-field="partnerAnatomy" data-value="both">
+            <img src="img/partner-anatomy-3.png" alt="" /><span>Both</span>
+          </button>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn--ghost" data-go="anatomy">← Back</button>
+          <button class="btn btn--primary" data-next="partners" disabled>Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STEP 3: PARTNERS ===================== -->
+    <section class="screen" data-screen="partners">
+      <div class="card">
+        <div class="step-tag">Step 3 of 5</div>
+        <h2>Who are you hooking up with?</h2>
+        <p class="muted">Pick the type of partner you'll have this year — then choose how many.</p>
+        <div class="choice-grid tier-grid" id="tierSelect">
+          <button class="choice choice--tier" data-field="partnerTier" data-value="partner">
+            <img src="img/tier-partner.png" alt="" />
+            <span class="tier-name">Relationship</span><small>Lowest risk</small>
+          </button>
+          <button class="choice choice--tier" data-field="partnerTier" data-value="friend">
+            <img src="img/tier-friend.png" alt="" />
+            <span class="tier-name">Friend</span><small>Know them well</small>
+          </button>
+          <button class="choice choice--tier" data-field="partnerTier" data-value="acquaintance">
+            <img src="img/tier-acquaintance.png" alt="" />
+            <span class="tier-name">Acquaintance</span><small>Sort of know</small>
+          </button>
+          <button class="choice choice--tier" data-field="partnerTier" data-value="stranger">
+            <img src="img/tier-stranger.png" alt="" />
+            <span class="tier-name">Stranger</span><small>Highest risk</small>
+          </button>
+        </div>
+        <div class="count-control" id="countControl" hidden>
+          <label id="countLabel">How many this year?</label>
+          <div class="stepper">
+            <button data-count-btn="-1" aria-label="Fewer">−</button>
+            <span class="count" id="partnerCount">1</span>
+            <button data-count-btn="1" aria-label="More">+</button>
+          </div>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn--ghost" data-go="partnerAnatomy">← Back</button>
+          <button class="btn btn--primary" data-next="condoms" id="partnersNext" disabled>Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STEP 4: CONDOMS ===================== -->
+    <section class="screen" data-screen="condoms">
+      <div class="card">
+        <div class="step-tag">Step 4 of 5</div>
+        <h2>Do you use condoms?</h2>
+        <p class="muted">One setting for all partners. It matters a lot for some STIs — and barely at all for others.</p>
+        <div class="choice-grid choice-grid--2">
+          <button class="choice" data-field="condoms" data-value="true">
+            <div class="sprite sprite--condom" style="--n:2; --i:0;"></div><span>Yes, every time</span>
+          </button>
+          <button class="choice" data-field="condoms" data-value="false">
+            <div class="sprite sprite--condom" style="--n:2; --i:1;"></div><span>No</span>
+          </button>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn--ghost" data-go="partners">← Back</button>
+          <button class="btn btn--primary" data-next="hpv" disabled>Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STEP 5: HPV VACCINE ===================== -->
+    <section class="screen" data-screen="hpv">
+      <div class="card">
+        <div class="step-tag">Step 5 of 5</div>
+        <h2>Have you had the HPV vaccine?</h2>
+        <p class="muted">HPV is the most common STI by far. The vaccine prevents most high-risk strains — it's the biggest lever on your odds.</p>
+        <div class="choice-grid choice-grid--2">
+          <button class="choice" data-field="hpvVaccinated" data-value="true">
+            <div class="microbe-badge">
+              <div class="microbe-img microbe-img--hpv"></div><span class="badge badge--ok">✓</span>
+            </div><span>Yes, vaccinated</span>
+          </button>
+          <button class="choice" data-field="hpvVaccinated" data-value="false">
+            <div class="microbe-badge">
+              <div class="microbe-img microbe-img--hpv"></div><span class="badge badge--no">✕</span>
+            </div><span>No / not sure</span>
+          </button>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn--ghost" data-go="condoms">← Back</button>
+          <button class="btn btn--primary" id="calcBtn" disabled>See my odds →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RESULTS ===================== -->
+    <section class="screen" data-screen="results">
+      <div class="card">
+        <div class="step-tag">Your year</div>
+        <h2 id="oddsHeadline">Your odds of an STI this year</h2>
+        <div class="odds-meter">
+          <div class="odds-fill" id="oddsFill"></div>
+          <span class="odds-num" id="oddsNum">0%</span>
+        </div>
+        <details class="breakdown" id="breakdown">
+          <summary>See the full breakdown</summary>
+          <div class="bars" id="bars"></div>
+        </details>
+        <div class="roll-zone" id="rollZone">
+          <button class="btn btn--primary btn--dice" id="rollBtn">🎲 Roll the Dice</button>
+        </div>
+
+        <div class="post-roll" id="postRoll" hidden>
+        <div class="pr-left">
+          <div class="outcome" id="outcome">
+            <div class="rolling-inline">
+              <img class="dice-art spin" src="img/dice.png" alt="" /><span>Rolling the dice…</span>
+            </div>
+            <div class="result-content">
+              <img class="outcome-art" id="outcomeArt" src="img/result-clear.png" alt="" />
+              <div class="outcome-text">
+                <h3 id="outcomeTitle"></h3>
+                <div class="microbe-wrap" id="microbeWrap" hidden></div>
+                <p id="outcomeBlurb"></p>
+              </div>
+            </div>
+          </div>
+          <div class="roll-again">
+            <button class="btn btn--primary" id="rerollBtn">🎲 Roll again</button>
+          </div>
+        </div>
+
+        <div id="respecSection" hidden>
+          <div class="respec">
+            <h3 class="respec-title">Tweak your choices, then roll again</h3>
+            <div class="respec-row">
+              <span class="respec-label">Partner type</span>
+              <div class="pills">
+                <button class="pill" data-respec="partnerTier" data-value="partner">Relationship</button>
+                <button class="pill" data-respec="partnerTier" data-value="friend">Friend</button>
+                <button class="pill" data-respec="partnerTier" data-value="acquaintance">Acquaintance</button>
+                <button class="pill" data-respec="partnerTier" data-value="stranger">Stranger</button>
+              </div>
+            </div>
+            <div class="respec-row">
+              <span class="respec-label">Number of partners</span>
+              <div class="stepper">
+                <button data-respec-count="-1" aria-label="Fewer">−</button>
+                <span class="count" id="respecCount">1</span>
+                <button data-respec-count="1" aria-label="More">+</button>
+              </div>
+            </div>
+            <div class="respec-row">
+              <span class="respec-label">Condoms</span>
+              <div class="pills">
+                <button class="pill" data-respec="condoms" data-value="true">Yes</button>
+                <button class="pill" data-respec="condoms" data-value="false">No</button>
+              </div>
+            </div>
+            <div class="respec-row">
+              <span class="respec-label">HPV vaccine</span>
+              <div class="pills">
+                <button class="pill" data-respec="hpvVaccinated" data-value="true">Yes</button>
+                <button class="pill" data-respec="hpvVaccinated" data-value="false">No</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div><!-- /.post-roll -->
+
+        <p class="disclaimer" id="disclaimer">
+          Educational model based on population-level CDC/NHANES estimates. It cannot predict any real individual's risk and is not medical advice.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+  /* ============================================================
+     riskModel — identical logic to riskModel.js, inlined.
+     ============================================================ */
+  const RiskModel = (function () {
+    const STI_DATA = {
+      hpv:            { label:"HPV",            prevalence:0.40,  transmission:{ receptive:0.55, insertive:0.45, pp:0.50, vv:0.30   } },
+      herpes:         { label:"Herpes (HSV-2)", prevalence:0.10,  transmission:{ receptive:0.15, insertive:0.08, pp:0.12, vv:0.08   } },
+      chlamydia:      { label:"Chlamydia",      prevalence:0.04,  transmission:{ receptive:0.35, insertive:0.10, pp:0.30, vv:0.02   } },
+      trichomoniasis: { label:"Trichomoniasis", prevalence:0.02,  transmission:{ receptive:0.40, insertive:0.10, pp:0.05, vv:0.10   } },
+      gonorrhea:      { label:"Gonorrhea",      prevalence:0.007, transmission:{ receptive:0.50, insertive:0.20, pp:0.45, vv:0.02   } },
+      hiv:            { label:"HIV",            prevalence:0.003, transmission:{ receptive:0.02, insertive:0.007, pp:0.08, vv:0.0005 } },
+      syphilis:       { label:"Syphilis",       prevalence:0.002, transmission:{ receptive:0.30, insertive:0.30, pp:0.40, vv:0.10   } },
+    };
+    const CONDOM_FACTOR = 0.02, CONDOM_FACTOR_SKIN = 0.60;
+    const SKIN_CONTACT_STIS = new Set(["hpv","herpes"]);
+    const STI_KEYS = ["hpv","herpes","chlamydia","trichomoniasis","gonorrhea","hiv","syphilis"];
+    const TIER_MULTIPLIER = { stranger:1.00, acquaintance:0.60, friend:0.30, partner:0.12 };
+    const TIER_KEYS = ["partner","friend","acquaintance","stranger"];
+    const HPV_VACCINE_FACTOR = 0.10;
+    const MIN_PARTNERS = 1, MAX_PARTNERS = 10;
+    const clamp01 = (x) => Math.max(0, Math.min(1, x));
+
+    function transmissionFor(stiKey, studentAnatomy, partnerAnatomy) {
+      const t = STI_DATA[stiKey].transmission;
+      if (partnerAnatomy === "both") {
+        return Math.max(
+          transmissionFor(stiKey, studentAnatomy, "penis"),
+          transmissionFor(stiKey, studentAnatomy, "vulva")
+        );
+      }
+      if (studentAnatomy === "vulva" && partnerAnatomy === "penis") return t.receptive;
+      if (studentAnatomy === "penis" && partnerAnatomy === "vulva") return t.insertive;
+      if (studentAnatomy === "penis" && partnerAnatomy === "penis") return t.pp;
+      if (studentAnatomy === "vulva" && partnerAnatomy === "vulva") return t.vv;
+      throw new Error(`Invalid anatomy pairing: ${studentAnatomy} / ${partnerAnatomy}`);
+    }
+
+    function normalizeInput(input) {
+      const studentAnatomy = input.studentAnatomy;
+      const partnerAnatomy = input.partnerAnatomy;
+      const condoms = !!input.condoms;
+      const hpvVaccinated = !!input.hpvVaccinated;
+      if (studentAnatomy !== "penis" && studentAnatomy !== "vulva")
+        throw new Error('studentAnatomy must be "penis" or "vulva"');
+      if (!["penis","vulva","both"].includes(partnerAnatomy))
+        throw new Error('partnerAnatomy must be "penis", "vulva", or "both"');
+      const partners = {}; let total = 0;
+      for (const tier of TIER_KEYS) {
+        const n = Math.max(0, Math.floor((input.partners && input.partners[tier]) || 0));
+        partners[tier] = n; total += n;
+      }
+      if (total < MIN_PARTNERS) throw new Error(`Need at least ${MIN_PARTNERS} partner.`);
+      if (total > MAX_PARTNERS) throw new Error(`Total partners capped at ${MAX_PARTNERS} (got ${total}).`);
+      return { studentAnatomy, partnerAnatomy, condoms, hpvVaccinated, partners, totalPartners: total };
+    }
+
+    function calculateRisk(rawInput) {
+      const input = normalizeInput(rawInput);
+      const { studentAnatomy, partnerAnatomy, condoms, hpvVaccinated, partners } = input;
+      const perSTI = []; let pNoneProduct = 1;
+      for (const key of STI_KEYS) {
+        const sti = STI_DATA[key];
+        const condomFactor = condoms ? (SKIN_CONTACT_STIS.has(key) ? CONDOM_FACTOR_SKIN : CONDOM_FACTOR) : 1;
+        const vaccineFactor = key === "hpv" && hpvVaccinated ? HPV_VACCINE_FACTOR : 1;
+        const transmission = transmissionFor(key, studentAnatomy, partnerAnatomy) * vaccineFactor;
+        let pNoS = 1;
+        for (const tier of TIER_KEYS) {
+          const n = partners[tier]; if (n === 0) continue;
+          const effPrevalence = sti.prevalence * TIER_MULTIPLIER[tier];
+          const rPerPartner = clamp01(effPrevalence * transmission * condomFactor);
+          pNoS *= Math.pow(1 - rPerPartner, n);
+        }
+        const pGet = 1 - pNoS;
+        perSTI.push({ key, label: sti.label, pGet });
+        pNoneProduct *= pNoS;
+      }
+      const pAny = 1 - pNoneProduct;
+      const sumGet = perSTI.reduce((acc, s) => acc + s.pGet, 0) || 1;
+      for (const s of perSTI) s.weight = s.pGet / sumGet;
+      perSTI.sort((a, b) => b.pGet - a.pGet);
+      return { pAny, perSTI, input };
+    }
+
+    function rollOutcome(result, rng = Math.random) {
+      const stis = result.perSTI.filter((s) => rng() < s.pGet).map((s) => ({ key: s.key, label: s.label }));
+      return { contracted: stis.length > 0, stis };
+    }
+
+    return { STI_DATA, STI_KEYS, TIER_MULTIPLIER, TIER_KEYS, MIN_PARTNERS, MAX_PARTNERS,
+             transmissionFor, calculateRisk, rollOutcome };
+  })();
+
+  /* ============================================================
+     UI controller — identical behavior to app.js, inlined.
+     ============================================================ */
+  (function () {
+    "use strict";
+    const M = RiskModel;
+    const state = {
+      studentAnatomy:null, partnerAnatomy:null, condoms:null, hpvVaccinated:null,
+      partnerTier:null, partnerCount:1,
+      partners:{ partner:0, friend:0, acquaintance:0, stranger:0 },
+    };
+    const TIER_PLURAL = { partner:"relationship partners", friend:"friends", acquaintance:"acquaintances", stranger:"strangers" };
+    let lastResult = null;
+    const STI_IMG = {
+      chlamydia:"img/sti-Chlamydia.png", gonorrhea:"img/sti-Gonorrhea.png",
+      trichomoniasis:"img/sti-Trichomoniasis.png", hpv:"img/sti-HPV.png",
+      herpes:"img/sti-HSV.png", syphilis:"img/sti-Syphilis.png", hiv:"img/sti-HIV.png",
+    };
+    const GET_TESTED = "Get tested — most STIs are symptom-free, and most are curable or manageable. Testing is quick, routine, and often free.";
+    const CLEAR_BLURB = "You dodged it this round. Luck plays a part — but condoms, fewer partners, HPV vaccination, and regular testing are what move the odds.";
+
+    const $  = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+    function showScreen(name) {
+      $$(".screen").forEach((s) => s.classList.toggle("screen--active", s.dataset.screen === name));
+      $("#globalRestart").hidden = name === "landing";
+      $$(".screen").forEach((s) => { s.scrollTop = 0; });
+    }
+
+    $$("[data-go]").forEach((btn) => btn.addEventListener("click", () => showScreen(btn.dataset.go)));
+
+    $("#globalRestart").addEventListener("click", () => { resetAll(); showScreen("landing"); });
+
+    $$(".choice").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const field = btn.dataset.field;
+        const raw = btn.dataset.value;
+        const value = raw === "true" ? true : raw === "false" ? false : raw;
+        state[field] = value;
+        $$(`.choice[data-field="${field}"]`).forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        const screen = btn.closest(".screen");
+        const next = $(".btn--primary", $(".nav-row", screen));
+        if (next) next.disabled = false;
+      });
+    });
+
+    $$("[data-next]").forEach((btn) => btn.addEventListener("click", () => showScreen(btn.dataset.next)));
+
+    function syncPartners() {
+      state.partners = { partner:0, friend:0, acquaintance:0, stranger:0 };
+      if (state.partnerTier) state.partners[state.partnerTier] = state.partnerCount;
+    }
+    function refreshCount() {
+      $("#partnerCount").textContent = state.partnerCount;
+      $$("[data-count-btn]").forEach((b) => {
+        const d = parseInt(b.dataset.countBtn, 10);
+        b.disabled = (d < 0 && state.partnerCount <= M.MIN_PARTNERS) || (d > 0 && state.partnerCount >= M.MAX_PARTNERS);
+      });
+    }
+    $$(".choice--tier").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        state.partnerTier = btn.dataset.value;
+        if (!state.partnerCount || state.partnerCount < M.MIN_PARTNERS) state.partnerCount = 1;
+        $("#countControl").hidden = false;
+        $("#countLabel").textContent = `How many ${TIER_PLURAL[state.partnerTier]} this year?`;
+        refreshCount(); syncPartners();
+      })
+    );
+    $$("[data-count-btn]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const next = state.partnerCount + parseInt(b.dataset.countBtn, 10);
+        if (next < M.MIN_PARTNERS || next > M.MAX_PARTNERS) return;
+        state.partnerCount = next; refreshCount(); syncPartners();
+      })
+    );
+
+    function recompute() { syncPartners(); lastResult = M.calculateRisk(state); renderOdds(lastResult); }
+
+    $("#calcBtn").addEventListener("click", () => {
+      try { recompute(); }
+      catch (e) { alert(e.message); showScreen("partners"); return; }
+      initRespec();
+      $("#postRoll").hidden = true;
+      $("#postRoll").classList.remove("rolling");
+      $("#outcome").className = "outcome";
+      $("#respecSection").hidden = true;
+      $("#rollZone").hidden = false;
+      showScreen("results");
+    });
+
+    function rollDice() {
+      if (!lastResult) return;
+      $("#rollZone").hidden = true;
+      $("#postRoll").hidden = false;
+      $("#postRoll").classList.add("rolling");
+      $("#respecSection").hidden = true;
+      $("#outcome").className = "outcome rolling";
+      $("#rerollBtn").disabled = true;
+      setTimeout(() => {
+        revealOutcome(lastResult);
+        $("#postRoll").classList.remove("rolling");
+        $("#respecSection").hidden = false;
+        $("#rerollBtn").disabled = false;
+      }, 900);
+    }
+    $("#rollBtn").addEventListener("click", rollDice);
+    $("#rerollBtn").addEventListener("click", rollDice);
+
+    function setActivePill(field, value) {
+      $$(`.pill[data-respec="${field}"]`).forEach((b) => b.classList.toggle("active", b.dataset.value === String(value)));
+    }
+    function refreshRespecCount() {
+      $("#respecCount").textContent = state.partnerCount;
+      $$("[data-respec-count]").forEach((b) => {
+        const d = parseInt(b.dataset.respecCount, 10);
+        b.disabled = (d < 0 && state.partnerCount <= M.MIN_PARTNERS) || (d > 0 && state.partnerCount >= M.MAX_PARTNERS);
+      });
+    }
+    function initRespec() {
+      setActivePill("partnerTier", state.partnerTier);
+      setActivePill("condoms", state.condoms);
+      setActivePill("hpvVaccinated", state.hpvVaccinated);
+      refreshRespecCount();
+    }
+    $$(".pill[data-respec]").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        const field = btn.dataset.respec;
+        const raw = btn.dataset.value;
+        state[field] = raw === "true" ? true : raw === "false" ? false : raw;
+        setActivePill(field, raw); recompute();
+      })
+    );
+    $$("[data-respec-count]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const next = state.partnerCount + parseInt(b.dataset.respecCount, 10);
+        if (next < M.MIN_PARTNERS || next > M.MAX_PARTNERS) return;
+        state.partnerCount = next; refreshRespecCount(); recompute();
+      })
+    );
+
+    function renderOdds(result) {
+      const pct = Math.round(result.pAny * 100);
+      $("#oddsNum").textContent = pct + "%";
+      $("#oddsFill").style.width = "0%";
+      requestAnimationFrame(() => requestAnimationFrame(() => { $("#oddsFill").style.width = pct + "%"; }));
+      const bars = $("#bars"); bars.innerHTML = "";
+      result.perSTI.forEach((s) => {
+        const p = (s.pGet * 100);
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML =
+          `<span>${s.label}</span>` +
+          `<span class="bar-track"><span class="bar-val" style="width:${Math.min(100, p).toFixed(1)}%"></span></span>` +
+          `<span class="bar-pct">${p < 0.1 ? "<0.1" : p.toFixed(1)}%</span>`;
+        bars.appendChild(row);
+      });
+    }
+
+    function revealOutcome(result) {
+      const outcome = M.rollOutcome(result);
+      const box = $("#outcome");
+      const art = $("#outcomeArt");
+      const title = $("#outcomeTitle");
+      const blurb = $("#outcomeBlurb");
+      const microbeWrap = $("#microbeWrap");
+      microbeWrap.innerHTML = "";
+      if (!outcome.contracted) {
+        box.className = "outcome clear";
+        art.src = "img/result-clear.png";
+        title.textContent = "You stayed STI-free this year 🎉";
+        blurb.textContent = CLEAR_BLURB;
+        microbeWrap.hidden = true;
+      } else {
+        box.className = "outcome hit";
+        art.src = "img/result-sti.png";
+        title.textContent = outcome.stis.length === 1
+          ? `You contracted ${outcome.stis[0].label}`
+          : "You contracted multiple STIs";
+        blurb.textContent = GET_TESTED;
+        microbeWrap.hidden = false;
+        outcome.stis.forEach((s) => {
+          const item = document.createElement("div");
+          item.className = "microbe-item";
+          const img = document.createElement("div");
+          img.className = "microbe-img";
+          img.style.backgroundImage = `url("${STI_IMG[s.key]}")`;
+          const name = document.createElement("span");
+          name.className = "microbe-name";
+          name.textContent = s.label;
+          item.append(img, name);
+          microbeWrap.appendChild(item);
+        });
+      }
+    }
+
+    function resetAll() {
+      state.studentAnatomy=null; state.partnerAnatomy=null; state.condoms=null;
+      state.hpvVaccinated=null; state.partnerTier=null; state.partnerCount=1;
+      state.partners={ partner:0, friend:0, acquaintance:0, stranger:0 };
+      lastResult=null;
+      $$(".choice.selected").forEach((b) => b.classList.remove("selected"));
+      $$(".screen .btn--primary").forEach((b) => { if (["calcBtn"].includes(b.id) || b.dataset.next) b.disabled = true; });
+      $("#countControl").hidden = true;
+      refreshCount();
+    }
+
+    refreshCount();
+  })();
+  </script>
+</body>
+</html>
